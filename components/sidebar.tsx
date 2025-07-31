@@ -26,6 +26,8 @@ interface SidebarProps {
   onServerUrlChange: (url: string) => void
   isConnected: boolean
   onConnectionChange: (connected: boolean) => void
+  showServerSettings: boolean
+  onShowServerSettingsChange: (show: boolean) => void
 }
 
 const navigationItems = [
@@ -74,9 +76,10 @@ export function Sidebar({
   onServerUrlChange,
   isConnected,
   onConnectionChange,
+  showServerSettings,
+  onShowServerSettingsChange,
 }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [showServerSettings, setShowServerSettings] = useState(false)
 
   return (
     <>
@@ -162,7 +165,7 @@ export function Sidebar({
 
           <div className={`flex ${isCollapsed ? "flex-col space-y-2" : "space-x-2"}`}>
             <Button variant="ghost" size="sm" asChild className={isCollapsed ? "w-full" : "flex-1"}>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/andyeswong/ollama_lab" target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
                 {!isCollapsed && <span className="ml-2">GitHub</span>}
               </a>
@@ -172,7 +175,7 @@ export function Sidebar({
               variant="ghost"
               size="sm"
               className={isCollapsed ? "w-full" : "flex-1"}
-              onClick={() => setShowServerSettings(true)}
+              onClick={() => onShowServerSettingsChange(true)}
             >
               <Settings className="h-4 w-4" />
               {!isCollapsed && <span className="ml-2">Settings</span>}
@@ -187,7 +190,7 @@ export function Sidebar({
 
       <ServerSettingsModal
         open={showServerSettings}
-        onOpenChange={setShowServerSettings}
+        onOpenChange={onShowServerSettingsChange}
         serverUrl={serverUrl}
         onServerUrlChange={onServerUrlChange}
         isConnected={isConnected}

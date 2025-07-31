@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModelList } from "@/components/model-list"
@@ -25,6 +25,32 @@ export default function Home() {
   const [selectedModel, setSelectedModel] = useState<OllamaModel | null>(null)
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null)
   const [activeView, setActiveView] = useState("vram")
+  const [showServerSettings, setShowServerSettings] = useState(false)
+
+  useEffect(() => {
+    // Check server connection on initial load
+    const checkServerConnection = async () => {
+      try {
+        const response = await fetch("/api/ollama/test-connection", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ serverUrl }),
+        })
+        
+        if (response.ok) {
+          setIsConnected(true)
+        } else {
+          setIsConnected(false)
+          setShowServerSettings(true)  // Force open settings modal if not connected
+        }
+      } catch (error) {
+        setIsConnected(false)
+        setShowServerSettings(true)  // Force open settings modal if connection fails
+      }
+    }
+
+    checkServerConnection()
+  }, [])
 
   const renderContent = () => {
     switch (activeView) {
@@ -75,6 +101,8 @@ export default function Home() {
             onServerUrlChange={setServerUrl}
             isConnected={isConnected}
             onConnectionChange={setIsConnected}
+            showServerSettings={showServerSettings}
+            onShowServerSettingsChange={setShowServerSettings}
           />
           <div className="flex-1 flex flex-col">
             <div className="border-b bg-muted/40">
